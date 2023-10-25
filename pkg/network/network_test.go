@@ -5,18 +5,43 @@ import (
 	"testing"
 )
 
-// Return true if a == b within tolerance e, otherwise false
-func withinToleranc(a, b, e float64) bool {
-	if a == b {
-		return true
+// Return true if a == b within tolerance t, otherwise false
+func withinTolerance(a, b, t float64) bool {
+	c := math.Abs(a - b)
+	return c <= t
+}
+
+func TestWithinTolerance(t *testing.T) {
+	const tolerance = 0.001
+
+	tests := []struct {
+		a        float64
+		b        float64
+		expected bool
+	}{
+		{0.0, 0.0, true},
+		{0.001, 0.0, true},
+		{0.0, 0.001, true},
+		{0.0, 0.0001, true},
+		{0.0001, 0.0, true},
+		{0.0, 0.0011, false},
+		{0.0011, 0.0, false},
+		{0.002, 0.0, false},
+		{0.002, 0.0, false},
+		{1.0, 1.0, true},
+		{1.0, 0.0, false},
+		{0.0, 1.0, false},
+		{1.0, 1.0001, true},
+		{1.0001, 1.0, true},
 	}
 
-	d := math.Abs(a - b)
-	if b == 0 {
-		return d < e
+	for index, test := range tests {
+		result := withinTolerance(test.a, test.b, tolerance)
+		if result != test.expected {
+			t.Error("Test", index, "failed: a", test.a, "b", test.b, "expected", test.expected, "got", result)
+		}
 	}
 
-	return (d / math.Abs(b)) < e
 }
 
 func TestConvertBytesToBits(t *testing.T) {
@@ -77,8 +102,8 @@ func TestShortenThroughput(t *testing.T) {
 	for index, test := range tests {
 		throughput, rate := shortenThroughput(test.bitPerSecond)
 
-		if !withinToleranc(test.throughput, throughput, 1e9) {
-			t.Error("Test", index, "failed: input", test.bitPerSecond, "expected", test.throughput, "got", throughput)
+		if !withinTolerance(test.throughput, throughput, 0.01) {
+			t.Error("Test withinTolerance", index, "failed: input", test.bitPerSecond, "expected", test.throughput, "got", throughput)
 		}
 
 		if test.rate != rate {
