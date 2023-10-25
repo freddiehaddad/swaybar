@@ -21,16 +21,22 @@ List of components currently implemented included:
 - Time
 - Network
 
+## Sample Output
+
+```text
+D  977.58 Kbps U   36.79 Mbps | CPU  26.0 °C | GPU  58.0 °C | Wednesday, 25-Oct-23 16:14:20 PDT
+```
+
 ## Building
 
 ```text
-go build -o bin ./...
+go build -v -o bin ./...
 ```
 
 ## Testing
 
 ```text
-go test ./...
+go test -v ./...
 ```
 
 ## Installation
