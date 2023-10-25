@@ -3,13 +3,12 @@ package gpu
 import (
 	"fmt"
 	"log"
-	"os"
-	"strconv"
 	"strings"
 	"sync/atomic"
 	"time"
 
 	"github.com/freddiehaddad/swaybar/pkg/descriptor"
+	"github.com/freddiehaddad/swaybar/pkg/utils"
 )
 
 type GPU struct {
@@ -28,24 +27,6 @@ func New(sensor string, interval time.Duration) (*GPU, error) {
 	return gpu, nil
 }
 
-func getCurrentTemp(sensor string) (float64, error) {
-	dataPath := fmt.Sprintf("/sys/class/hwmon/hwmon1/%s", sensor)
-	dataRaw, err := os.ReadFile(dataPath)
-	if err != nil {
-		log.Println("Error reading", dataPath, err)
-		return 0, err
-	}
-	dataString := strings.TrimSuffix(string(dataRaw), "\n")
-	tempRaw, err := strconv.ParseInt(dataString, 10, 64)
-	if err != nil {
-		log.Println("Error parsing int64", dataString, err)
-		return 0, err
-	}
-	tempCelcius := float64(tempRaw) / 1000.0
-	return tempCelcius, nil
-
-}
-
 func (c *GPU) Update() (descriptor.Descriptor, error) {
 	log.Println("Updating", c.Sensor)
 	descriptor := descriptor.Descriptor{
@@ -54,12 +35,14 @@ func (c *GPU) Update() (descriptor.Descriptor, error) {
 	}
 	var sb strings.Builder
 
-	tempCelcius, err := getCurrentTemp(c.Sensor)
+	sensor := fmt.Sprintf("/sys/class/hwmon/hwmon1/%s", c.Sensor)
+	sensorValue, err := utils.GetSensorValue(sensor)
 	if err != nil {
-		log.Println("Error reading", c.Sensor, err)
+		log.Println("Error reading", sensor, err)
 		return descriptor, err
 	}
 
+	tempCelcius:= utils.ReadSensorValue(sensorValue)
 	sb.WriteString(fmt.Sprintf("GPU %5.1f °C", tempCelcius))
 	descriptor.Value = sb.String()
 	return descriptor, nil
