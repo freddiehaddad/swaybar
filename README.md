@@ -17,6 +17,7 @@ components report updates at different intervals.
 List of components currently implemented included:
 
 - CPU
+- GPU
 - Time
 - Network
 

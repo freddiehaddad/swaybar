@@ -10,6 +10,7 @@ import (
 	"github.com/freddiehaddad/swaybar/pkg/cpu"
 	"github.com/freddiehaddad/swaybar/pkg/date"
 	"github.com/freddiehaddad/swaybar/pkg/descriptor"
+	"github.com/freddiehaddad/swaybar/pkg/gpu"
 	"github.com/freddiehaddad/swaybar/pkg/interfaces"
 	"github.com/freddiehaddad/swaybar/pkg/network"
 )
@@ -24,7 +25,7 @@ func main() {
 	components := map[string]interfaces.Runnable{}
 
 	// order to render components on the status bar -- will come from a config file
-	renderOrder := []string{"network", "cpu", "date"}
+	renderOrder := []string{"network", "cpu", "gpu", "date"}
 
 	// component updates arrive via a buffered channel asynchronously
 	componentUpdates := make(chan descriptor.Descriptor, len(renderOrder))
@@ -39,6 +40,10 @@ func main() {
 			log.Println("Creating cpu component")
 			cpu, _ := cpu.New("temp1_input", time.Second)
 			components["cpu"] = cpu
+		case "gpu":
+			log.Println("Creating gpu component")
+			gpu, _ := gpu.New("temp1_input", time.Second)
+			components["gpu"] = gpu
 		case "network":
 			log.Println("Creating network component")
 			network, _ := network.New("enp6s0", time.Second)
