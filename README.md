@@ -45,6 +45,13 @@ After building the code, copy the generated binary to a directory of your choice
 and update your sway config `bar` section to launch the code. In this example,
 the program is copied to `$HOME/.config/sway/statusbar`.
 
+The program will look for a `config.yml` file in a config directory in the same
+location as the executable.
+
+## Configuration
+
+Refer to the `config/config.yml` reference file for configuring the status bar.
+
 ```text
 bar {
     status_command $HOME/.config/sway/statusbar

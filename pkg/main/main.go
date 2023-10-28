@@ -13,6 +13,7 @@ import (
 	"github.com/freddiehaddad/swaybar/pkg/gpu"
 	"github.com/freddiehaddad/swaybar/pkg/interfaces"
 	"github.com/freddiehaddad/swaybar/pkg/network"
+	"gopkg.in/yaml.v3"
 )
 
 func init() {
@@ -20,37 +21,102 @@ func init() {
 	log.SetOutput(os.Stderr)
 }
 
+type Component struct {
+	Interval string `yaml:"interval"`
+	Device   string `yaml:"device"`
+	Sensor   string `yaml:"sensor"`
+	Format   string `yaml:"format"`
+	Order    int    `yaml:"order"`
+}
+
+func ParseInterval(interval string) (time.Duration, error) {
+	if len(interval) == 0 {
+		return time.Second, nil
+	}
+
+	parsed, err := time.ParseDuration(interval)
+	if err != nil {
+		log.Println("Error parsing interval", interval, err)
+	}
+	return parsed, err
+}
+
+func GenerateRenderOrder(components map[string]Component, order []string) (error) {
+	for component, settings := range components {
+		order[settings.Order] = component
+	}
+	return nil
+}
+
 func main() {
-	// list of components -- will come from a config file
-	components := map[string]interfaces.Runnable{}
+	// load the config file
+	configFile := "./config/config.yml"
+	configBytes, err := os.ReadFile(configFile)
+	if err != nil {
+		log.Fatalln("Error reading config file", configFile, err)
+	}
+
+	// parse yaml format
+	componentConfigs := map[string]Component{}
+	err = yaml.Unmarshal(configBytes, &componentConfigs)
+	if err != nil {
+		log.Fatalln("Error parsing config", configFile, err)
+	}
 
 	// order to render components on the status bar -- will come from a config file
-	renderOrder := []string{"network", "cpu", "gpu", "date"}
+	renderOrder := make([]string, len(componentConfigs))
+	err = GenerateRenderOrder(componentConfigs, renderOrder)
+	if err != nil {
+		log.Fatalln("Error generating render order", err)
+	}
+
+	// list of components
+	components := map[string]interfaces.Runnable{}
 
 	// component updates arrive via a buffered channel asynchronously
-	componentUpdates := make(chan descriptor.Descriptor, len(renderOrder))
+	componentUpdates := make(chan descriptor.Descriptor, len(componentConfigs))
 
 	// last received component update
 	statusBar := map[string]descriptor.Descriptor{}
 
 	// create the components
-	for _, component := range renderOrder {
+	for component, settings := range componentConfigs {
 		switch component {
 		case "cpu":
 			log.Println("Creating cpu component")
-			cpu, _ := cpu.New("temp1_input", time.Second)
+			interval, err := ParseInterval(settings.Interval)
+			if err != nil {
+				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
+				interval = time.Second
+			}
+			cpu, _ := cpu.New(settings.Sensor, interval)
 			components["cpu"] = cpu
 		case "gpu":
 			log.Println("Creating gpu component")
-			gpu, _ := gpu.New("temp1_input", time.Second)
+			interval, err := ParseInterval(settings.Interval)
+			if err != nil {
+				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
+				interval = time.Second
+			}
+			gpu, _ := gpu.New(settings.Sensor, interval)
 			components["gpu"] = gpu
 		case "network":
 			log.Println("Creating network component")
-			network, _ := network.New("enp6s0", time.Second)
+			interval, err := ParseInterval(settings.Interval)
+			if err != nil {
+				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
+				interval = time.Second
+			}
+			network, _ := network.New(settings.Device, interval)
 			components["network"] = network
 		case "date":
 			log.Println("Creating date component")
-			date, _ := date.New(time.RFC850, time.Second)
+			interval, err := ParseInterval(settings.Interval)
+			if err != nil {
+				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
+				interval = time.Second
+			}
+			date, _ := date.New(settings.Format, interval)
 			components["date"] = date
 		default:
 			log.Println("Unknown component: ", component)

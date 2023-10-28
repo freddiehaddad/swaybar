@@ -42,7 +42,7 @@ func (c *GPU) Update() (descriptor.Descriptor, error) {
 		return descriptor, err
 	}
 
-	tempCelcius:= utils.ReadSensorValue(sensorValue)
+	tempCelcius := utils.ReadSensorValue(sensorValue)
 	sb.WriteString(fmt.Sprintf("GPU %5.1f °C", tempCelcius))
 	descriptor.Value = sb.String()
 	return descriptor, nil
@@ -67,4 +67,3 @@ func (c *GPU) Start(buffer chan descriptor.Descriptor) {
 func (c *GPU) Stop() {
 	c.Enabled.Store(false)
 }
-
