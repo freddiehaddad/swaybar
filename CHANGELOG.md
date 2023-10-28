@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/freddiehaddad/swaybar/compare/v0.3.0...v0.4.0) (2023-10-28)
+
+
+### Features
+
+* **config:** Add config.yml file support ([#11](https://github.com/freddiehaddad/swaybar/issues/11)) ([85f1c24](https://github.com/freddiehaddad/swaybar/commit/85f1c24b7f17c6795248479d7d79696e206d9008))
+
 ## [0.3.0](https://github.com/freddiehaddad/swaybar/compare/v0.2.0...v0.3.0) (2023-10-25)
 
 
