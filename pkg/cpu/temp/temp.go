@@ -1,4 +1,4 @@
-package cpu
+package cputemp
 
 import (
 	"fmt"
@@ -11,14 +11,14 @@ import (
 	"github.com/freddiehaddad/swaybar/pkg/utils"
 )
 
-type CPU struct {
+type CPUTemp struct {
 	Sensor   string
 	Interval time.Duration
 	Enabled  atomic.Bool
 }
 
-func New(sensor string, interval time.Duration) (*CPU, error) {
-	cpu := &CPU{
+func New(sensor string, interval time.Duration) (*CPUTemp, error) {
+	cpu := &CPUTemp{
 		Sensor:   sensor,
 		Interval: interval,
 	}
@@ -27,10 +27,10 @@ func New(sensor string, interval time.Duration) (*CPU, error) {
 	return cpu, nil
 }
 
-func (c *CPU) Update() (descriptor.Descriptor, error) {
+func (c *CPUTemp) Update() (descriptor.Descriptor, error) {
 	log.Println("Updating CPU temperature sensor", c.Sensor)
 	descriptor := descriptor.Descriptor{
-		Component: "cpu",
+		Component: "cputemp",
 		Value:     "",
 	}
 	var sb strings.Builder
@@ -48,7 +48,7 @@ func (c *CPU) Update() (descriptor.Descriptor, error) {
 	return descriptor, nil
 }
 
-func (c *CPU) Start(buffer chan descriptor.Descriptor) {
+func (c *CPUTemp) Start(buffer chan descriptor.Descriptor) {
 	c.Enabled.Store(true)
 
 	go func() {
@@ -64,6 +64,6 @@ func (c *CPU) Start(buffer chan descriptor.Descriptor) {
 	}()
 }
 
-func (c *CPU) Stop() {
+func (c *CPUTemp) Stop() {
 	c.Enabled.Store(false)
 }

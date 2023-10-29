@@ -49,7 +49,7 @@ network:
   order: 0
   device: "enp6s0"
 
-cpu:
+cputemp:
   # interval: "500ms" # equivalent to 0.5 seconds
   order: 1
   sensor: "temp1_input"

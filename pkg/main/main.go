@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/freddiehaddad/swaybar/pkg/cpu"
+	"github.com/freddiehaddad/swaybar/pkg/cpu/temp"
 	"github.com/freddiehaddad/swaybar/pkg/date"
 	"github.com/freddiehaddad/swaybar/pkg/descriptor"
 	"github.com/freddiehaddad/swaybar/pkg/gpu"
@@ -82,15 +82,15 @@ func main() {
 	// create the components
 	for component, settings := range componentConfigs {
 		switch component {
-		case "cpu":
-			log.Println("Creating cpu component")
+		case "cputemp":
+			log.Println("Creating cpu temperature component")
 			interval, err := ParseInterval(settings.Interval)
 			if err != nil {
 				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
 				interval = time.Second
 			}
-			cpu, _ := cpu.New(settings.Sensor, interval)
-			components["cpu"] = cpu
+			cputemp, _ := cputemp.New(settings.Sensor, interval)
+			components["cputemp"] = cputemp
 		case "gpu":
 			log.Println("Creating gpu component")
 			interval, err := ParseInterval(settings.Interval)
