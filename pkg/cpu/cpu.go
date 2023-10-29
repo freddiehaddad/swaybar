@@ -28,7 +28,7 @@ func New(sensor string, interval time.Duration) (*CPU, error) {
 }
 
 func (c *CPU) Update() (descriptor.Descriptor, error) {
-	log.Println("Updating", c.Sensor)
+	log.Println("Updating CPU temperature sensor", c.Sensor)
 	descriptor := descriptor.Descriptor{
 		Component: "cpu",
 		Value:     "",
