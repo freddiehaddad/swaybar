@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.5.0](https://github.com/freddiehaddad/swaybar/compare/v0.4.0...v0.5.0) (2023-10-30)
+
+
+### Features
+
+* **cpu:** Add cpu utilization component ([#16](https://github.com/freddiehaddad/swaybar/issues/16)) ([0b609ae](https://github.com/freddiehaddad/swaybar/commit/0b609aeccd3d13299f4867f2ffa77502c4609e00))
+* **cpu:** cpu temperature component to cputemp ([#13](https://github.com/freddiehaddad/swaybar/issues/13)) ([bb06727](https://github.com/freddiehaddad/swaybar/commit/bb06727b1df5fb874af9e53b98f3b811d6538660))
+
+
+### Bug Fixes
+
+* **logging:** Update log for CPU and GPU clarity ([#14](https://github.com/freddiehaddad/swaybar/issues/14)) ([259e6d9](https://github.com/freddiehaddad/swaybar/commit/259e6d95c1d44d11e4446b20a09e275e7778d2d7))
+
 ## [0.4.0](https://github.com/freddiehaddad/swaybar/compare/v0.3.0...v0.4.0) (2023-10-28)
 
 
