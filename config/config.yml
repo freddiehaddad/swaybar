@@ -49,17 +49,21 @@ network:
   order: 0
   device: "enp6s0"
 
+cpuutil:
+  interval: "1s"
+  order: 1
+
 cputemp:
   # interval: "500ms" # equivalent to 0.5 seconds
-  order: 1
+  order: 2
   sensor: "temp1_input"
 
 gpu:
   # interval: "2s" # 2 seconds
-  order: 2
+  order: 3
   sensor: "temp1_input"
 
 date:
   # interval: "1500000000ns" # equivalent to 1.5 seconds
-  order: 3
+  order: 4
   format: "Monday, 02-Jan-06 15:04:05 MST"

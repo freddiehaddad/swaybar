@@ -7,7 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/freddiehaddad/swaybar/pkg/cpu/temp"
+	cputemp "github.com/freddiehaddad/swaybar/pkg/cpu/temp"
+	cpuutil "github.com/freddiehaddad/swaybar/pkg/cpu/utilization"
 	"github.com/freddiehaddad/swaybar/pkg/date"
 	"github.com/freddiehaddad/swaybar/pkg/descriptor"
 	"github.com/freddiehaddad/swaybar/pkg/gpu"
@@ -41,7 +42,7 @@ func ParseInterval(interval string) (time.Duration, error) {
 	return parsed, err
 }
 
-func GenerateRenderOrder(components map[string]Component, order []string) (error) {
+func GenerateRenderOrder(components map[string]Component, order []string) error {
 	for component, settings := range components {
 		order[settings.Order] = component
 	}
@@ -91,6 +92,15 @@ func main() {
 			}
 			cputemp, _ := cputemp.New(settings.Sensor, interval)
 			components["cputemp"] = cputemp
+		case "cpuutil":
+			log.Println("Creating cpu utilization component")
+			interval, err := ParseInterval(settings.Interval)
+			if err != nil {
+				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
+				interval = time.Second
+			}
+			cpuutil, _ := cpuutil.New(interval)
+			components["cpuutil"] = cpuutil
 		case "gpu":
 			log.Println("Creating gpu component")
 			interval, err := ParseInterval(settings.Interval)
