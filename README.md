@@ -17,6 +17,7 @@ components report updates at different intervals.
 List of components currently implemented included:
 
 - CPU
+- CPU Utilization
 - GPU
 - Time
 - Network
@@ -24,7 +25,7 @@ List of components currently implemented included:
 ## Sample Output
 
 ```text
-D  977.58 Kbps U   36.79 Mbps | CPU  26.0 °C | GPU  58.0 °C | Wednesday, 25-Oct-23 16:14:20 PDT
+D  977.58 Kbps U   36.79 Mbps | CPU   0.9% | CPU  26.0 °C | GPU  58.0 °C | Wednesday, 25-Oct-23 16:14:20 PDT
 ```
 
 ## Building
