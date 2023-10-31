@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -22,13 +21,11 @@ import (
 func GetSensorValue(sensor string) (int64, error) {
 	sensorValueRaw, err := os.ReadFile(sensor)
 	if err != nil {
-		log.Println("Error reading", sensor, err)
 		return 0, err
 	}
 	sensorValueTrimmed := strings.TrimSuffix(string(sensorValueRaw), "\n")
 	sensorValue, err := strconv.ParseInt(sensorValueTrimmed, 10, 32)
 	if err != nil {
-		log.Println("Error parsing value", sensorValueTrimmed, err)
 		return 0, err
 	}
 	return sensorValue, nil

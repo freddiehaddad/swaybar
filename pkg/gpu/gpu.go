@@ -28,7 +28,7 @@ func New(sensor string, interval time.Duration) (*GPU, error) {
 }
 
 func (c *GPU) Update() (descriptor.Descriptor, error) {
-	log.Println("Updating GPU temperature sensor", c.Sensor)
+	log.Printf("INFO: Updating GPU temperature sensor=%s", c.Sensor)
 	descriptor := descriptor.Descriptor{
 		Component: "gpu",
 		Value:     "",
@@ -38,7 +38,7 @@ func (c *GPU) Update() (descriptor.Descriptor, error) {
 	sensor := fmt.Sprintf("/sys/class/hwmon/hwmon1/%s", c.Sensor)
 	sensorValue, err := utils.GetSensorValue(sensor)
 	if err != nil {
-		log.Println("Error reading", sensor, err)
+		log.Printf("ERROR: GetSensorValue sensor=%s err=%s", sensor, err)
 		return descriptor, err
 	}
 
@@ -55,7 +55,7 @@ func (c *GPU) Start(buffer chan descriptor.Descriptor) {
 		for c.Enabled.Load() {
 			descriptor, err := c.Update()
 			if err != nil {
-				log.Println("Error during update", err)
+				log.Printf("ERROR: Update err=%s", err)
 			} else {
 				buffer <- descriptor
 			}

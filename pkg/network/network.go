@@ -44,13 +44,11 @@ func getBytesTransferred(device, direction string) (int64, error) {
 	dataPath := fmt.Sprintf("/sys/class/net/%s/statistics/%s", device, direction)
 	dataRaw, err := os.ReadFile(dataPath)
 	if err != nil {
-		log.Println("Error reading", dataPath, err)
 		return 0, err
 	}
 	dataString := strings.TrimSuffix(string(dataRaw), "\n")
 	bytesTransferred, err := strconv.ParseInt(dataString, 10, 64)
 	if err != nil {
-		log.Println("Error parsing int64", dataString, err)
 		return 0, err
 	}
 	return bytesTransferred, nil
@@ -92,7 +90,7 @@ func calculateThroughput(prevTimeNanoseconds, prevBytes, currTimeNanoseconds, cu
 }
 
 func (n *Network) Update() (descriptor.Descriptor, error) {
-	log.Println("Updating", n.Device)
+	log.Printf("INFO: Updating network throughput device=%s", n.Device)
 	var s string
 	descriptor := descriptor.Descriptor{
 		Component: "network",
@@ -105,7 +103,7 @@ func (n *Network) Update() (descriptor.Descriptor, error) {
 	s = "rx_bytes"
 	rxBytesTransferred, rxErr := getBytesTransferred(n.Device, s)
 	if rxErr != nil {
-		log.Println("Error getting", s, rxErr)
+		log.Printf("ERROR: getBytesTransferred device=%s s=%s err=%s", n.Device, s, rxErr)
 		return descriptor, rxErr
 
 	}
@@ -113,7 +111,7 @@ func (n *Network) Update() (descriptor.Descriptor, error) {
 	s = "tx_bytes"
 	txBytesTransferred, txErr := getBytesTransferred(n.Device, s)
 	if txErr != nil {
-		log.Println("Error getting", s, txErr)
+		log.Printf("ERROR: getBytesTransferred device=%s s=%s err=%s", n.Device, s, txErr)
 		return descriptor, txErr
 	}
 
@@ -143,7 +141,7 @@ func (n *Network) Start(buffer chan descriptor.Descriptor) {
 		for n.Enabled.Load() {
 			descriptor, err := n.Update()
 			if err != nil {
-				log.Println("Error during update", err)
+				log.Printf("ERROR: Update err=%s", err)
 			} else {
 				buffer <- descriptor
 			}
