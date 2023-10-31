@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/freddiehaddad/swaybar/compare/v0.5.0...v0.6.0) (2023-10-31)
+
+
+### Features
+
+* **logging:** Update logging format ([#18](https://github.com/freddiehaddad/swaybar/issues/18)) ([17d0175](https://github.com/freddiehaddad/swaybar/commit/17d017576b5cf6d14622e4ceb2d0631ca62a5640))
+
 ## [0.5.0](https://github.com/freddiehaddad/swaybar/compare/v0.4.0...v0.5.0) (2023-10-30)
 
 
