@@ -44,7 +44,7 @@ func New(interval time.Duration) (*CPUUtilization, error) {
 }
 
 func (c *CPUUtilization) Update() (descriptor.Descriptor, error) {
-	log.Println("Updating CPU utilization")
+	log.Printf("INFO: Updating CPU utilization")
 	descriptor := descriptor.Descriptor{
 		Component: "cpuutil",
 		Value:     "",
@@ -54,7 +54,7 @@ func (c *CPUUtilization) Update() (descriptor.Descriptor, error) {
 	statPath := "/proc/stat"
 	statRaw, err := os.ReadFile(statPath)
 	if err != nil {
-		log.Println("Error reading", statPath, err)
+		log.Printf("ERROR: ReadFile statPath=%s err=%s", statPath, err)
 		return descriptor, err
 	}
 
@@ -66,7 +66,7 @@ func (c *CPUUtilization) Update() (descriptor.Descriptor, error) {
 
 	currentStatValues, err := parseInts(currentStatValuesRaw)
 	if err != nil {
-		log.Printf("Error parsing currentStatValuesRaw=%v, err=%s\n", currentStatValuesRaw, err)
+		log.Printf("ERROR: parseInts currentStatValuesRaw=%v err=%s", currentStatValuesRaw, err)
 		return descriptor, err
 	}
 
@@ -97,7 +97,7 @@ func (c *CPUUtilization) Start(buffer chan descriptor.Descriptor) {
 		for c.Enabled.Load() {
 			descriptor, err := c.Update()
 			if err != nil {
-				log.Println("Error during update", err)
+				log.Printf("ERROR: Update err=%s", err)
 			} else {
 				buffer <- descriptor
 			}
@@ -123,27 +123,23 @@ func getStatValues(bytes []byte) ([]string, error) {
 	s := string(bytes)
 	split := strings.SplitAfterN(s, rawSeparator, numSplits)
 	if len(split) != 2 {
-		err := fmt.Errorf("error splitting %s, expected a length %d, but got length %d", s, expectedLength, len(split))
-		log.Println(err)
+		err := fmt.Errorf("length error len=%d got=%d s=%s rawSeparator=%s numSplits=%d", expectedLength, len(split), s, rawSeparator, numSplits)
 		return finalValues, err
 	}
 
 	stats := split[0]
-	log.Println("Prepping", stats)
 
 	if len(stats) <= len(firstValue) {
-		err := fmt.Errorf("length of %s: %d is not as expected", stats, len(stats))
+		err := fmt.Errorf("length error stats=%s len=%d <= firstValue=%s len=%d", stats, len(stats), firstValue, len(firstValue))
 		return finalValues, err
 	}
 
 	stats = strings.TrimPrefix(stats, firstValue)
 	stats = strings.TrimSpace(stats)
 
-	log.Println("Finished prepping", stats)
-
 	values := strings.Split(stats, valueSeparator)
 	if len(values) != valuesExpected {
-		err := fmt.Errorf("error procesing values, expected length %d, but got length %d", valuesExpected, len(values))
+		err := fmt.Errorf("split error stats=%s did not produce valuesExpected=%d got=%d", stats, valuesExpected, len(values))
 		return finalValues, err
 	}
 

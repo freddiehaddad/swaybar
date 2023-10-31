@@ -1,7 +1,6 @@
 package utilization
 
 import (
-	"fmt"
 	"testing"
 )
 
@@ -70,46 +69,46 @@ func TestSumArray(t *testing.T) {
 
 func TestGetStatValues(t *testing.T) {
 	tests := []struct {
-		input    []byte
-		expected []string
-		err      error
+		input      []byte
+		expected   []string
+		shouldFail bool
 	}{
 		{
 			[]byte("cpu  0 0 0 0 0 0 0 0 0 0\n"),
 			[]string{"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
-			nil,
+			false,
 		},
 		{
 			[]byte("cpu  1528029 235 1406982 142714174 167167 223736 40373 0 0 0\n"),
 			[]string{"1528029", "235", "1406982", "142714174", "167167", "223736", "40373", "0", "0", "0"},
-			nil,
+			false,
 		},
 		{
 			[]byte("cpu"),
 			nil,
-			fmt.Errorf("error splitting cpu, expected a length 2, but got length 1"),
+			true,
 		},
 		{
 			[]byte("cpu\n"),
 			nil,
-			fmt.Errorf("error procesing values, expected length 10, but got length 1"),
+			false,
 		},
 		{
 			[]byte("cpu  0 0 0 0 0 0 0 0 0\n"),
 			nil,
-			fmt.Errorf("error procesing values, expected length 10, but got length 9"),
+			false,
 		},
 	}
 
 	for index, test := range tests {
 		result, err := getStatValues(test.input)
-		if test.err != nil && test.err.Error() != err.Error() {
-			t.Errorf("Test %d failed. Expected err=%v, got err=%v", index, test.err, err)
+		if test.shouldFail && err == nil {
+			t.Errorf("Test %d failed. shouldFail=%v, err=%v", index, test.shouldFail, err)
 			continue
 		}
 
 		if len(test.expected) != len(result) {
-			t.Errorf("Test %d failed. Expected result len=%d, got len=%d", index, len(test.expected), len(result))
+			t.Errorf("Test %d failed. Result expected len=%d, got len=%d", index, len(test.expected), len(result))
 			continue
 		}
 

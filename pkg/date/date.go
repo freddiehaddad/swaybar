@@ -29,7 +29,7 @@ func New(format string, interval time.Duration) (*Date, error) {
 }
 
 func (d *Date) Update() (descriptor.Descriptor, error) {
-	log.Println("Updating", "date")
+	log.Printf("INFO: Updating date")
 	descriptor := descriptor.Descriptor{
 		Component: "date",
 		Value:     "",
@@ -48,7 +48,7 @@ func (d *Date) Start(buffer chan descriptor.Descriptor) {
 		for d.Enabled.Load() {
 			descriptor, err := d.Update()
 			if err != nil {
-				log.Println("Error during update", err)
+				log.Printf("ERROR: Update err=%s", err)
 			} else {
 				buffer <- descriptor
 			}
