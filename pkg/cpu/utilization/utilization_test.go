@@ -69,9 +69,9 @@ func TestSumArray(t *testing.T) {
 
 func TestGetStatValues(t *testing.T) {
 	tests := []struct {
-		input      []byte
-		expected   []string
-		shouldFail bool
+		input        []byte
+		expected     []string
+		expectsError bool
 	}{
 		{
 			[]byte("cpu  0 0 0 0 0 0 0 0 0 0\n"),
@@ -91,19 +91,26 @@ func TestGetStatValues(t *testing.T) {
 		{
 			[]byte("cpu\n"),
 			nil,
-			false,
+			true,
 		},
 		{
 			[]byte("cpu  0 0 0 0 0 0 0 0 0\n"),
 			nil,
-			false,
+			true,
 		},
 	}
 
 	for index, test := range tests {
 		result, err := getStatValues(test.input)
-		if test.shouldFail && err == nil {
-			t.Errorf("Test %d failed. shouldFail=%v, err=%v", index, test.shouldFail, err)
+		if test.expectsError {
+			if err == nil {
+				t.Errorf("Test %d failed. shouldFail=%v, err=%v", index, test.expectsError, err)
+			}
+			continue
+		}
+
+		if err != nil {
+			t.Errorf("Test %d bad. Exepcted err=%v, got err=%s", index, nil, err)
 			continue
 		}
 
