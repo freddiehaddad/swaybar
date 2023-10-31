@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/freddiehaddad/swaybar/compare/v0.6.0...v0.6.1) (2023-10-31)
+
+
+### Bug Fixes
+
+* **tests:** fix test logic ([#20](https://github.com/freddiehaddad/swaybar/issues/20)) ([8d49a07](https://github.com/freddiehaddad/swaybar/commit/8d49a07a232b5e78e9043eb537e573d8a9e05811))
+
 ## [0.6.0](https://github.com/freddiehaddad/swaybar/compare/v0.5.0...v0.6.0) (2023-10-31)
 
 
