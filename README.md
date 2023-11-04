@@ -16,10 +16,10 @@ components report updates at different intervals.
 
 List of components currently implemented included:
 
+- Date/Time
 - CPU Temperature
 - CPU Utilization
 - GPU Temperature
-- Time
 - Network Throughput
 
 ## Sample Output
