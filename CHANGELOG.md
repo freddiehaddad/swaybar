@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.2](https://github.com/freddiehaddad/swaybar/compare/v0.6.1...v0.6.2) (2023-11-04)
+
+
+### Bug Fixes
+
+* **utils:** add missing tests for GetSensorValue ([#24](https://github.com/freddiehaddad/swaybar/issues/24)) ([30f86cc](https://github.com/freddiehaddad/swaybar/commit/30f86ccd488b684294f9d08939bf5dfc0ce8447e))
+
 ## [0.6.1](https://github.com/freddiehaddad/swaybar/compare/v0.6.0...v0.6.1) (2023-10-31)
 
 
