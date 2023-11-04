@@ -19,44 +19,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
         with:
           go-version: "1.21.3"
-      - run: go build -v ./...
+
+      - name: Build
+        run: go build -v ./...
 
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
         with:
           go-version: "1.21.3"
-      - run: go test -v ./...
 
-  release:
-    runs-on: ubuntu-latest
-    if: ${{ github.ref == 'refs/heads/master' }}
-
-    needs:
-      - build
-      - test
-
-    steps:
-      - uses: google-github-actions/release-please-action@v3
-        id: release
-        with:
-          release-type: simple
-          package-name: swaybar
-
-      - uses: actions/checkout@v3
-      - name: tag stable versions
-        if: ${{ steps.release.outputs.release_created }}
-        run: |
-          git config user.name gha[bot]
-          git config user.email gha[bot]@noreply.github.com
-          git remote add gh-token "https://${{ secrets.GITHUB_TOKEN }}@github.com/google-github.actions/release-please-action.git"
-          git tag -d stable || true
-          git push origin :stable || true
-          git tag -a stable -m "Last Stable Release"
-          git push origin stable
+      - name: Build
+        run: go test -v ./...
