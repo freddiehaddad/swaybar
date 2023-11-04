@@ -2,6 +2,38 @@ package utils
 
 import "testing"
 
+func TestGetSensorValue(t *testing.T) {
+	tests := []struct {
+		file       string
+		expected   int64
+		shouldFail bool
+	}{
+		{"tests/bad", 0, true},
+		{"tests/nofile", 0, true},
+		{"tests/0", 0, false},
+		{"tests/10000", 10000, false},
+	}
+
+	for index, test := range tests {
+		result, err := GetSensorValue(test.file)
+
+		if test.shouldFail {
+			if err == nil {
+				t.Errorf("Test %d failed shouldFail=%v err=%v", index, test.shouldFail, err)
+			}
+			continue
+		}
+
+		if err != nil {
+			t.Errorf("Test %d failed with unexpected err=%v", index, err)
+		}
+
+		if result != test.expected {
+			t.Errorf("Test %d failed result=%d expected=%d", index, result, test.expected)
+		}
+	}
+}
+
 func TestReadSensorValue(t *testing.T) {
 	tests := []struct {
 		input    int64
