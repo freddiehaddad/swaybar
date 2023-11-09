@@ -2,6 +2,22 @@
 
 A highly parallelized swaybar app written in Go.
 
+List of components currently implemented included:
+
+- Date/Time
+- CPU Temperature
+- CPU Utilization
+- GPU Temperature
+- Network Throughput
+
+## Sample Output
+
+```text
+D 977.58 Kbps U 36.79 Mbps | CPU 0.9% | CPU 26.0°C | GPU 58.0°C | Oct 23 16:14
+```
+
+## How it Works
+
 The modules (or components) are each responsible for populating the status bar
 with specific data. For example, the network component provides data throughput
 rates for a given interface. Similarly, the time component returns time and date
@@ -14,18 +30,25 @@ second, millisecond, ten microseconds, etc.
 Whenever an update is pushed, the status bar will get updated allowing each
 components report updates at different intervals.
 
-List of components currently implemented included:
-
-- Date/Time
-- CPU Temperature
-- CPU Utilization
-- GPU Temperature
-- Network Throughput
-
-## Sample Output
-
 ```text
-D  977.58 Kbps U   36.79 Mbps | CPU   0.9% | CPU  26.0 °C | GPU  58.0 °C | Wednesday, 25-Oct-23 16:14:20 PDT
+                    +---------------+       +---------------+
+                    |  Component 0  |  ...  |  Component N  |
+                    +-------+-------+       +-------+-------+
+                            |                       |
+                            v                       v
+                  +------------------------------------------+
+                  |         Asynchronous Data Buffer         |
+                  +---------------------+--------------------+
+                                        |
+                                        v
+                                 +-------------+
+                                 |   Renderer  |
+                                 +------+------+
+                                        |
+                                        v
++------------------------------------------------------------------------------+
+| D 97.58 Kbps U 6.79 Mbps | CPU 0.9% | CPU 26.0°C | GPU 58.0°C | Oct 23 16:14 |
++------------------------------------------------------------------------------+
 ```
 
 ## Building
