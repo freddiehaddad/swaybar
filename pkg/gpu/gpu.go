@@ -11,34 +11,60 @@ import (
 	"github.com/freddiehaddad/swaybar/pkg/utils"
 )
 
+const (
+	Name  = "amdgpu"
+	Label = "edge"
+)
+
 type GPU struct {
-	Sensor   string
-	Interval time.Duration
-	Enabled  atomic.Bool
+	Name       string
+	Label      string
+	SensorPath string
+	Interval   time.Duration
+	Enabled    atomic.Bool
 }
 
-func New(sensor string, interval time.Duration) (*GPU, error) {
+// Attempt to create a sensor with data coming from the hwmon (name) and
+// sensor (label). If either string is empty, internal default values will
+// be assumed.
+func New(name, label string, interval time.Duration) (*GPU, error) {
 	gpu := &GPU{
-		Sensor:   sensor,
 		Interval: interval,
 	}
 
+	if len(name) == 0 {
+		gpu.Name = Name
+	} else {
+		gpu.Name = name
+	}
+
+	if len(label) == 0 {
+		gpu.Label = Label
+	} else {
+		gpu.Label = label
+	}
+
+	sensorPath, err := utils.FindSensorPath(gpu.Name, gpu.Label)
+	if err != nil {
+		return nil, err
+	}
+
+	gpu.SensorPath = sensorPath
 	gpu.Update()
 	return gpu, nil
 }
 
 func (c *GPU) Update() (descriptor.Descriptor, error) {
-	log.Printf("INFO: Updating GPU temperature sensor=%s", c.Sensor)
+	log.Printf("INFO: Updating GPU temperature sensor=%s", c.Label)
 	descriptor := descriptor.Descriptor{
 		Component: "gpu",
 		Value:     "",
 	}
 	var sb strings.Builder
 
-	sensor := fmt.Sprintf("/sys/class/hwmon/hwmon1/%s", c.Sensor)
-	sensorValue, err := utils.GetSensorValue(sensor)
+	sensorValue, err := utils.GetSensorValue(c.SensorPath)
 	if err != nil {
-		log.Printf("ERROR: GetSensorValue sensor=%s err=%s", sensor, err)
+		log.Printf("ERROR: GetSensorValue sensor=%s err=%s", c.SensorPath, err)
 		return descriptor, err
 	}
 
