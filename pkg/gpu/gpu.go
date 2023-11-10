@@ -54,17 +54,17 @@ func New(name, label string, interval time.Duration) (*GPU, error) {
 	return gpu, nil
 }
 
-func (c *GPU) Update() (descriptor.Descriptor, error) {
-	log.Printf("INFO: Updating GPU temperature sensor=%s", c.Label)
+func (g *GPU) Update() (descriptor.Descriptor, error) {
+	log.Printf("INFO: Updating GPU temperature sensor=%s", g.Label)
 	descriptor := descriptor.Descriptor{
 		Component: "gpu",
 		Value:     "",
 	}
 	var sb strings.Builder
 
-	sensorValue, err := utils.GetSensorValue(c.SensorPath)
+	sensorValue, err := utils.GetSensorValue(g.SensorPath)
 	if err != nil {
-		log.Printf("ERROR: GetSensorValue sensor=%s err=%s", c.SensorPath, err)
+		log.Printf("ERROR: GetSensorValue sensor=%s err=%s", g.SensorPath, err)
 		return descriptor, err
 	}
 
@@ -74,22 +74,22 @@ func (c *GPU) Update() (descriptor.Descriptor, error) {
 	return descriptor, nil
 }
 
-func (c *GPU) Start(buffer chan descriptor.Descriptor) {
-	c.Enabled.Store(true)
+func (g *GPU) Start(buffer chan descriptor.Descriptor) {
+	g.Enabled.Store(true)
 
 	go func() {
-		for c.Enabled.Load() {
-			descriptor, err := c.Update()
+		for g.Enabled.Load() {
+			descriptor, err := g.Update()
 			if err != nil {
 				log.Printf("ERROR: Update err=%s", err)
 			} else {
 				buffer <- descriptor
 			}
-			time.Sleep(c.Interval)
+			time.Sleep(g.Interval)
 		}
 	}()
 }
 
-func (c *GPU) Stop() {
-	c.Enabled.Store(false)
+func (g *GPU) Stop() {
+	g.Enabled.Store(false)
 }
