@@ -1,10 +1,16 @@
 package utils
 
 import (
+	"errors"
+	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
+
+const SensorPath = "/sys/class/hwmon"
 
 // Returns the sensor value in its raw form as exposed by the /sys file system.
 // For example, with the Intel Core i9-12900k, the temperature will be returned
@@ -35,4 +41,98 @@ func GetSensorValue(sensor string) (int64, error) {
 // in degrees Celcius.
 func ReadSensorValue(value int64) float64 {
 	return float64(value) / 1000.0
+}
+
+// Returns true if the mode has the symbolic link flag set.
+func symbolicLink(mode fs.FileMode) bool {
+	return mode&fs.ModeSymlink != 0
+}
+
+// Searches all directories under SensorPath, following symbolic links, for
+// an hwmonX/name file whose contents matches name and a *_input file whose
+// corresponding *_label file matches label.  Returns the full path to the
+// matching *_input file containing the sensor data, or an error if no match
+// was was found.
+func FindSensorPath(name, label string) (string, error) {
+	sensorPath := ""
+	entries, err := os.ReadDir(SensorPath)
+	if err != nil {
+		return sensorPath, err
+	}
+
+	for _, entry := range entries {
+		info, err := entry.Info()
+		if err != nil {
+			return sensorPath, err
+		}
+
+		if !symbolicLink(info.Mode()) {
+			err := errors.New("Expected " + entry.Name() + " to be a symbolic link.")
+			return sensorPath, err
+		}
+
+		fp := filepath.Join(SensorPath, entry.Name())
+		link, err := os.Readlink(fp)
+		if err != nil {
+			return sensorPath, err
+		}
+
+		path := filepath.Join(SensorPath, link)
+		entries, err := os.ReadDir(path)
+		if err != nil {
+			return sensorPath, err
+		}
+
+		nameFound := false
+		labelFound := false
+		for _, entry := range entries {
+			if strings.HasSuffix(entry.Name(), "name") {
+				fp := filepath.Join(path, entry.Name())
+				raw, err := os.ReadFile(fp)
+				if err != nil {
+					return sensorPath, err
+				}
+
+				data := string(raw)
+				data = strings.TrimSpace(data)
+
+				if data == name {
+					nameFound = true
+				}
+			} else if strings.HasSuffix(entry.Name(), "label") { // e.g. temp1_label
+				fp := filepath.Join(path, entry.Name())
+				raw, err := os.ReadFile(fp)
+				if err != nil {
+					return sensorPath, err
+				}
+
+				data := string(raw)
+				data = strings.TrimSpace(data)
+				data = strings.ToLower(data)
+
+				if !strings.HasPrefix(data, label) {
+					continue
+				}
+
+				prefix := strings.TrimSuffix(entry.Name(), "label")
+				filename := fmt.Sprintf("%s%s", prefix, "input")
+				fp = filepath.Join(path, filename)
+
+				_, err = os.ReadFile(fp)
+				if err != nil {
+					return sensorPath, err
+				}
+
+				labelFound = true
+				sensorPath = fp
+			}
+
+			if nameFound && labelFound {
+				return sensorPath, nil
+			}
+		}
+	}
+
+	err = errors.New("No sensor data found for " + name + "/" + label)
+	return sensorPath, err
 }

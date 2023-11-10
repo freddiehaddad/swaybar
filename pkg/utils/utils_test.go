@@ -1,6 +1,9 @@
 package utils
 
-import "testing"
+import (
+	"io/fs"
+	"testing"
+)
 
 func TestGetSensorValue(t *testing.T) {
 	tests := []struct {
@@ -48,6 +51,23 @@ func TestReadSensorValue(t *testing.T) {
 		result := ReadSensorValue(test.input)
 		if result != test.expected {
 			t.Error("Test", index, "failed:", "input", test.input, "expected", test.expected, "got", result)
+		}
+	}
+}
+
+func TestSymbolicLink(t *testing.T) {
+	tests := []struct {
+		input    fs.FileMode
+		expected bool
+	}{
+		{fs.ModeSymlink, true},
+		{0xFFFFFFFF ^ fs.ModeSymlink, false},
+	}
+
+	for index, test := range tests {
+		result := symbolicLink(test.input)
+		if result != test.expected {
+			t.Errorf("Test %d failed result=%v expected=%v\n", index, result, test.expected)
 		}
 	}
 }

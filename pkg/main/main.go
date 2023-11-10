@@ -24,10 +24,11 @@ func init() {
 
 type Component struct {
 	Interval string `yaml:"interval"`
-	Device   string `yaml:"device"`
-	Sensor   string `yaml:"sensor"`
-	Format   string `yaml:"format"`
 	Order    int    `yaml:"order"`
+	Device   string `yaml:"device"`
+	Name     string `yaml:"name"`
+	Label    string `yaml:"label"`
+	Format   string `yaml:"format"`
 }
 
 func ParseInterval(interval string) (time.Duration, error) {
@@ -90,7 +91,10 @@ func main() {
 				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
 				interval = time.Second
 			}
-			cputemp, _ := cputemp.New(settings.Sensor, interval)
+			cputemp, err := cputemp.New(settings.Name, settings.Label, interval)
+			if err != nil {
+				log.Fatalf("ERROR: Failed to create component=%q err=%q\n", component, err)
+			}
 			components["cputemp"] = cputemp
 		case "cpuutil":
 			log.Println("Creating cpu utilization component")
@@ -108,7 +112,10 @@ func main() {
 				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
 				interval = time.Second
 			}
-			gpu, _ := gpu.New(settings.Sensor, interval)
+			gpu, err := gpu.New(settings.Name, settings.Label, interval)
+			if err != nil {
+				log.Fatalf("ERROR: Failed to create component=%q err=%q\n", component, err)
+			}
 			components["gpu"] = gpu
 		case "network":
 			log.Println("Creating network component")

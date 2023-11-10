@@ -56,12 +56,14 @@ cpuutil:
 cputemp:
   # interval: "500ms" # equivalent to 0.5 seconds
   order: 2
-  sensor: "temp1_input"
+  # name: "coretemp"
+  # label: "package"
 
 gpu:
   # interval: "2s" # 2 seconds
   order: 3
-  sensor: "temp1_input"
+  # name: "amdgpu"
+  # label: "edge"
 
 date:
   # interval: "1500000000ns" # equivalent to 1.5 seconds
