@@ -38,7 +38,7 @@ func ParseInterval(interval string) (time.Duration, error) {
 
 	parsed, err := time.ParseDuration(interval)
 	if err != nil {
-		log.Println("Error parsing interval", interval, err)
+		log.Printf("ERROR: ParseInterval interval=%s err=%s\n", interval, err)
 	}
 	return parsed, err
 }
@@ -55,21 +55,21 @@ func main() {
 	configFile := "./config/config.yml"
 	configBytes, err := os.ReadFile(configFile)
 	if err != nil {
-		log.Fatalln("Error reading config file", configFile, err)
+		log.Fatalf("ERROR: ReadFile configFile=%s err=%s\n", configFile, err)
 	}
 
 	// parse yaml format
 	componentConfigs := map[string]Component{}
 	err = yaml.Unmarshal(configBytes, &componentConfigs)
 	if err != nil {
-		log.Fatalln("Error parsing config", configFile, err)
+		log.Fatalf("ERROR: Unmarshal configFile=%s err=%s\n", configFile, err)
 	}
 
 	// order to render components on the status bar -- will come from a config file
 	renderOrder := make([]string, len(componentConfigs))
 	err = GenerateRenderOrder(componentConfigs, renderOrder)
 	if err != nil {
-		log.Fatalln("Error generating render order", err)
+		log.Fatalf("ERROR: GenerateRenderOrder err=%s\n", err)
 	}
 
 	// list of components
@@ -85,11 +85,10 @@ func main() {
 	for component, settings := range componentConfigs {
 		switch component {
 		case "cputemp":
-			log.Println("Creating cpu temperature component")
+			log.Printf("INFO: Creating component=%q settings=%+v\n", component, settings)
 			interval, err := ParseInterval(settings.Interval)
 			if err != nil {
-				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
-				interval = time.Second
+				log.Fatalf("ERROR: ParseInterval interval=%s err=%s\n", settings.Interval, err)
 			}
 			cputemp, err := cputemp.New(settings.Name, settings.Label, interval)
 			if err != nil {
@@ -97,20 +96,18 @@ func main() {
 			}
 			components["cputemp"] = cputemp
 		case "cpuutil":
-			log.Println("Creating cpu utilization component")
+			log.Printf("INFO: Creating component=%q settings=%+v\n", component, settings)
 			interval, err := ParseInterval(settings.Interval)
 			if err != nil {
-				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
-				interval = time.Second
+				log.Fatalf("ERROR: ParseInterval interval=%s err=%s\n", settings.Interval, err)
 			}
 			cpuutil, _ := cpuutil.New(interval)
 			components["cpuutil"] = cpuutil
 		case "gpu":
-			log.Println("Creating gpu component")
+			log.Printf("INFO: Creating component=%q settings=%+v\n", component, settings)
 			interval, err := ParseInterval(settings.Interval)
 			if err != nil {
-				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
-				interval = time.Second
+				log.Fatalf("ERROR: ParseInterval interval=%s err=%s\n", settings.Interval, err)
 			}
 			gpu, err := gpu.New(settings.Name, settings.Label, interval)
 			if err != nil {
@@ -118,38 +115,36 @@ func main() {
 			}
 			components["gpu"] = gpu
 		case "network":
-			log.Println("Creating network component")
+			log.Printf("INFO: Creating component=%q settings=%+v\n", component, settings)
 			interval, err := ParseInterval(settings.Interval)
 			if err != nil {
-				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
-				interval = time.Second
+				log.Fatalf("ERROR: ParseInterval interval=%s err=%s\n", settings.Interval, err)
 			}
 			network, _ := network.New(settings.Device, interval)
 			components["network"] = network
 		case "date":
-			log.Println("Creating date component")
+			log.Printf("INFO: Creating component=%q settings=%+v\n", component, settings)
 			interval, err := ParseInterval(settings.Interval)
 			if err != nil {
-				log.Println("Failed to parse interval", interval, err, "using default value of 1s")
-				interval = time.Second
+				log.Fatalf("ERROR: ParseInterval interval=%s err=%s\n", settings.Interval, err)
 			}
 			date, _ := date.New(settings.Format, interval)
 			components["date"] = date
 		default:
-			log.Println("Unknown component: ", component)
+			log.Fatalf("ERROR: Unknown component=%s settings=%+v\n", component, settings)
 		}
 	}
 
 	// start the components
 	for name, component := range components {
-		log.Println("Starting", name)
+		log.Printf("INFO: Starting name=%s\n", name)
 		component.Start(componentUpdates)
 	}
 
 	// render the statusbar when updates arrive
 	for descriptor := range componentUpdates {
 		// store the update
-		log.Println("Update from", descriptor.Component)
+		log.Printf("INFO: Update from descriptor=%+v\n", descriptor)
 		statusBar[descriptor.Component] = descriptor
 
 		// generate the statusbar
