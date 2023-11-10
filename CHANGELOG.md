@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.0](https://github.com/freddiehaddad/swaybar/compare/v0.6.2...v0.7.0) (2023-11-10)
+
+
+### Features
+
+* Support automatically finding sensor data. ([#27](https://github.com/freddiehaddad/swaybar/issues/27)) ([d5fa515](https://github.com/freddiehaddad/swaybar/commit/d5fa5154f03194e40550dcf6f8829ad026ea52a7))
+
+
+### Bug Fixes
+
+* **descriptor:** remove unused fields ([#32](https://github.com/freddiehaddad/swaybar/issues/32)) ([5b26bfe](https://github.com/freddiehaddad/swaybar/commit/5b26bfee63b4500c72be514fc235f2e784c9dc51))
+* **gpu:** use g as identifier for receiver ([#29](https://github.com/freddiehaddad/swaybar/issues/29)) ([0ba52ce](https://github.com/freddiehaddad/swaybar/commit/0ba52ce56211004af600cc19dd88a21152023a25))
+* rename package main files to match executable ([#30](https://github.com/freddiehaddad/swaybar/issues/30)) ([f85cfc4](https://github.com/freddiehaddad/swaybar/commit/f85cfc4414282bb78d821fc240a2f366b7ab7037))
+* use consistent logging style ([#31](https://github.com/freddiehaddad/swaybar/issues/31)) ([165b216](https://github.com/freddiehaddad/swaybar/commit/165b216f0cba882215d4f7890795b23b91a03a3f))
+
 ## [0.6.2](https://github.com/freddiehaddad/swaybar/compare/v0.6.1...v0.6.2) (2023-11-04)
 
 
