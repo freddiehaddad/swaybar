@@ -15,6 +15,10 @@
 #     (us): microseconds 1e6
 #     (ns): nanoseconds  1e9
 #
+# For fractional units of time, use a more fine-grained unit:
+#
+#     "500ms" - equivalent to 0.5 seconds
+#
 # If not specified, the default value of one second will be used.
 #
 #
@@ -45,7 +49,7 @@
 #    TimeOnly    = "15:04:05"
 #
 network:
-  # interval: "1s"
+  interval: "1s"
   order: 0
   device: "enp6s0"
 
@@ -54,18 +58,18 @@ cpuutil:
   order: 1
 
 cputemp:
-  # interval: "500ms" # equivalent to 0.5 seconds
+  interval: "1s"
   order: 2
-  # name: "coretemp"
-  # label: "package"
+  name: "coretemp"
+  label: "package"
 
 gpu:
-  # interval: "2s" # 2 seconds
+  interval: "1s"
   order: 3
-  # name: "amdgpu"
-  # label: "edge"
+  name: "amdgpu"
+  label: "edge"
 
 date:
-  # interval: "1500000000ns" # equivalent to 1.5 seconds
+  interval: "1s"
   order: 4
-  format: "Monday, 02-Jan-06 15:04:05 MST"
+  format: "01/02/2006 15:04:05"
