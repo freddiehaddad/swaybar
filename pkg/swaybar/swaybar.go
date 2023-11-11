@@ -76,7 +76,7 @@ func main() {
 	components := map[string]interfaces.Runnable{}
 
 	// component updates arrive via a buffered channel asynchronously
-	componentUpdates := make(chan descriptor.Descriptor, len(componentConfigs))
+	updates := make(chan descriptor.Descriptor, len(componentConfigs))
 
 	// last received component update
 	statusBar := map[string]descriptor.Descriptor{}
@@ -138,32 +138,38 @@ func main() {
 	// start the components
 	for name, component := range components {
 		log.Printf("INFO: Starting name=%s\n", name)
-		component.Start(componentUpdates)
+		component.Start(updates)
 	}
 
 	// render the statusbar when updates arrive
-	for descriptor := range componentUpdates {
-		// store the update
-		log.Printf("INFO: Update from descriptor=%+v\n", descriptor)
-		statusBar[descriptor.Component] = descriptor
+	for {
+		select {
+		case update := <-updates:
+			log.Printf("INFO: Update from update=%+v\n", update)
+			statusBar[update.Component] = update
+		default:
+			// generate the statusbar
+			sep := ""
+			stringBuilder := strings.Builder{}
+			for _, component := range renderOrder {
+				descriptor, exists := statusBar[component]
 
-		// generate the statusbar
-		sep := ""
-		stringBuilder := strings.Builder{}
-		for _, component := range renderOrder {
-			descriptor, exists := statusBar[component]
+				// unless we wait for all components to generate the
+				// first update, we might have empty components
+				if !exists {
+					continue
+				}
 
-			// unless we wait for all components to generate the
-			// first update, we might have empty components
-			if !exists {
-				continue
+				stringBuilder.WriteString(sep)
+				stringBuilder.WriteString(descriptor.Value)
+				sep = " | "
 			}
 
-			stringBuilder.WriteString(sep)
-			stringBuilder.WriteString(descriptor.Value)
-			sep = " | "
-		}
+			fmt.Println(stringBuilder.String())
 
-		fmt.Println(stringBuilder.String())
+			update := <-updates
+			log.Printf("INFO: Update from update=%+v\n", update)
+			statusBar[update.Component] = update
+		}
 	}
 }
