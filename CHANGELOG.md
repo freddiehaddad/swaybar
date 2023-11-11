@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/freddiehaddad/swaybar/compare/v0.7.0...v0.7.1) (2023-11-11)
+
+
+### Bug Fixes
+
+* **config:** improve comment clarity and defaults ([#33](https://github.com/freddiehaddad/swaybar/issues/33)) ([e33edf6](https://github.com/freddiehaddad/swaybar/commit/e33edf6337fdd3501991bbcb9b47ef2b11a7332d))
+
 ## [0.7.0](https://github.com/freddiehaddad/swaybar/compare/v0.6.2...v0.7.0) (2023-11-10)
 
 
