@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.2](https://github.com/freddiehaddad/swaybar/compare/v0.7.1...v0.7.2) (2023-11-11)
+
+
+### Bug Fixes
+
+* **swaybar:** gather all updates before rendering ([#36](https://github.com/freddiehaddad/swaybar/issues/36)) ([6c69d88](https://github.com/freddiehaddad/swaybar/commit/6c69d88214347786cd14882fd965bf7058780527))
+
 ## [0.7.1](https://github.com/freddiehaddad/swaybar/compare/v0.7.0...v0.7.1) (2023-11-11)
 
 
